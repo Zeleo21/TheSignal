@@ -5,8 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -29,6 +28,7 @@ model Node {
   children         Node[]   @relation("NodeToNode")
 
   @@index([parentId], map: "idx_nodes_parent")
-  @@map("nodes") // Garde le nom de table en minuscule et au pluriel
+  @@unique([parentId, name], name: "parentId_name")
+  @@map("nodes")
 }
 

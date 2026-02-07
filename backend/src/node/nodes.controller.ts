@@ -1,4 +1,5 @@
 import { Body, Controller, Post, Req } from '@nestjs/common';
+import { NodesService } from "./nodes.service";
 
 export type FileInformation = {
     name: string;
@@ -10,10 +11,10 @@ export type FileInformation = {
 
 @Controller('nodes')
 export class NodesController {
+    constructor(private readonly nodesService: NodesService) {}
     @Post('upload')
-    createNodes(@Body() files: FileInformation[]) {
-        console.log('Ouais ca tape le backend');
+    async createNodes(@Body() files: FileInformation[]) {
         console.log(files);
-        return 'YOO la team du front ca dit quoi'
+        return this.nodesService.upsertFilesIntoNodes(files);
     }
 }

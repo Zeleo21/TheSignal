@@ -9,13 +9,12 @@ import { FileService } from '../service/file/file.service';
   standalone: true
 })
 export class Home {
-
   private readonly fileService = inject(FileService);
   public areFileUploaded = signal(false);
 
-  public onFileSelected = (event: any): void => {
+  public onFileSelected = async (event: any): Promise<void> => {
     const files: FileList = event.target.files;
-    this.fileService.uploadFiles(files);
+    await this.fileService.uploadFiles(files);
     this.areFileUploaded.set(true);
   }
 }
