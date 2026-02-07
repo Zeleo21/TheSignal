@@ -1,0 +1,56 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "tailwindcss";
+
+@theme {
+  /* --- 60% Colors --- */
+  --color-background: #0d0d0d;
+
+  /* --- 30% Colors --- */
+  --color-panel: #1a1a1d;
+  --color-surface: #2d2d30;
+  --color-muted: #4b4b4b;
+
+  /* --- 10% Colors (Signal) --- */
+  --color-signal: #00ff41;
+  --color-signal-dim: #003b00;
+  --color-signal-bright: #00ff66;
+
+  /* --- Fonts --- */
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* --- Animations --- */
+  --animate-glitch: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+
+  @keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+  }
+}
+
+/* --- Global Styles --- */
+@layer base {
+  body {
+    @apply bg-background text-signal font-mono antialiased;
+    margin: 0;
+    min-height: 100vh;
+  }
+}
+
+/* --- Scanlines Effect (Optionnel) --- */
+body::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+  linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 9999;
+  background-size: 100% 4px, 3px 100%;
+  pointer-events: none;
+  opacity: 0.1;
+}
