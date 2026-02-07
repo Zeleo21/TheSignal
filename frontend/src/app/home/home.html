@@ -1,0 +1,36 @@
+
+<ng-container>
+  <div class="flex justify-center mt-10">
+    <h1 class="text-6xl">Welcome to the Wired</h1>
+  </div>
+  @if(!areFileUploaded()) {
+  <div class="flex justify-center">
+    <div class="flex items-center gap-4">
+      <label
+        for="folder-upload"
+        class="cursor-pointer bg-signal text-black rounded-full m-5 px-6 py-2
+           border-2 border-transparent hover:bg-signal-bright hover:border-black
+           transition-all duration-200 shadow-md flex items-center gap-2 font-bold"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+        </svg>
+        UPLOAD DIR / FILES
+      </label>
+
+      <input
+        id="folder-upload"
+        type="file"
+        webkitdirectory
+        multiple
+        (change)="onFileSelected($event)"
+        class="hidden"
+      >
+    </div>
+  </div>
+  } @else {
+      <div class="flex justify-center">
+        Files are uploaded
+      </div>
+  }
+</ng-container>

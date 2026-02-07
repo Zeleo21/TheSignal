@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Node {
+  id               String   @id @default(uuid()) @db.Uuid
+  parentId         String?  @map("parent_id") @db.Uuid
+  name             String   @db.VarChar(255)
+  type             String?  @db.VarChar(50)
+  metadata         Json?    @db.JsonB
+
+  frequencyVector Float[]  @map("frequency_vector")
+
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  // --- Relations ---
+  parent           Node?    @relation("NodeToNode", fields: [parentId], references: [id])
+  children         Node[]   @relation("NodeToNode")
+
+  @@index([parentId], map: "idx_nodes_parent")
+  @@map("nodes") // Garde le nom de table en minuscule et au pluriel
+}
+
