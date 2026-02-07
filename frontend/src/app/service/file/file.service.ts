@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { File } from './file.model';
+import axios from 'axios';
 
 @Injectable({
   providedIn: 'root',
@@ -8,18 +9,27 @@ export class FileService {
 
   extractFileInformation(files: FileList): File[] {
     let fileInformation: File[] = [];
-    for(const file of files) {
-      fileInformation.push({name: file.name, size: file.size, type: file.type })
+    const actualFiles = Array.from(files);
+    for(const file of actualFiles) {
+      fileInformation.push({ name: file.name, size: file.size, type: file.type, path: file.webkitRelativePath })
     }
     return fileInformation;
   }
 
-  uploadFiles(files: FileList): void {
-    if(!files || files.length === 0) {
+  async uploadFiles(files: FileList): Promise<void> {
+    if (!files || files.length === 0) {
       return;
     }
     let fileInformation = this.extractFileInformation(files);
     console.log(fileInformation);
+    try {
+      //FIXME : use .env and everything later on for cleeeean code
+      //FIXME : also move this into an api service for better reusability
+      const res = await axios.post("http://localhost:3300/nodes/upload", fileInformation)
+      console.log('res is : ', res);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 
