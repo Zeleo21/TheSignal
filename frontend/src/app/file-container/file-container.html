@@ -1,7 +1,12 @@
 
 
 <ng-container>
-  <div class="border-2 border-panel p-1">
-    <app-file-exlorer [node]="node()" [depth]="0"></app-file-exlorer>
+  <div class="flex-col justify-center items-center font-bold">
+    <div class="flex justify-center text-white border border-signal/30 p-2 border-b-transparent">
+      File Explorer
+    </div>
+    <div class="border border-signal/30 p-1 text-white bg-signal-dim/30 backdrop-blur-sm">
+      <app-file-exlorer [node]="node()" [depth]="0"></app-file-exlorer>
+    </div>
   </div>
 </ng-container>

@@ -35,7 +35,7 @@
 /* --- Global Styles --- */
 @layer base {
   body {
-    @apply bg-background text-signal font-mono antialiased;
+    @apply bg-background font-mono antialiased;
     margin: 0;
     min-height: 100vh;
   }
