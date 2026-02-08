@@ -1,13 +1,15 @@
-<div class="node-container" [style.padding-left.px]="depth() * 20">
-  <div class="flex items-center gap-2 p-1 hover:bg-panel cursor-pointer rounded text-xs"
+<div class="node-container">
+  <div class="flex items-center gap-2 p-1 hover:bg-panel cursor-pointer rounded text-xs" [style.padding-left.px]="depth() * 5"
        (click)="toggle()">
     <span>{{ isDirectory ? (isOpen() ? '📂' : '📁') : '📄' }}</span>
     <span [class.font-bold]="isDirectory">{{ node()?.name  | fileFormat : node()?.type === FileEnum.DIRECTORY }}</span>
   </div>
 
   @if (isDirectory && isOpen()) {
-    @for (child of node()?.children; track child.name) {
-      <app-file-exlorer [node]="child" [depth]="depth() + 1"></app-file-exlorer>
-    }
+      <div class="children-block border-l border-gray-800 ml-2.5">
+        @for (child of node()?.children; track child.name) {
+            <app-file-exlorer [node]="child" [depth]="depth() + 1"></app-file-exlorer>
+        }
+      </div>
   }
 </div>

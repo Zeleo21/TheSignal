@@ -9,7 +9,7 @@ export class FileFormatPipe implements PipeTransform {
   transform(name: string | undefined, isDirectory: boolean): string {
     if(!name) return '';
     if(isDirectory){
-      return name.slice(0, MAX_FILE_NAME_LENGTH) + '...';
+      return name.slice(0, MAX_FILE_NAME_LENGTH) + (name.length > MAX_FILE_NAME_LENGTH ? '...' : '');
     } else {
       const parsedName = name.split('.');
       const isOverMaxLengthWithExtension = parsedName[0]?.length > MAX_FILE_NAME_LENGTH - parsedName[1]?.length;
