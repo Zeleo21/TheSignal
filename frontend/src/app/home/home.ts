@@ -1,18 +1,22 @@
 import {Component, computed, effect, inject, signal} from '@angular/core';
 import { FileService } from '../service/file/file.service';
-import { File } from '../service/file/file.model';
+import { File, FileNode} from '../service/file/file.model';
+import { FileExlorer } from '../file-exlorer/file-exlorer';
+import {FileContainer} from '../file-container/file-container';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [
+    FileExlorer,
+    FileContainer
+  ],
   templateUrl: './home.html',
-  styleUrl: './home.css',
   standalone: true
 })
 export class Home {
   private readonly fileService = inject(FileService);
   public areFileUploaded = signal(false);
-  public folderList = signal<File | null>(null);
+  public fileSystem = signal<FileNode | undefined>(undefined);
   public rootId = signal('');
 
   constructor() {
@@ -20,7 +24,7 @@ export class Home {
       const id = this.rootId();
       if (id) {
         const tree = await this.fileService.getAllFilesFromRootNode(id);
-        this.folderList.set(tree);
+        this.fileSystem.set(tree);
       }
     }, { allowSignalWrites: true });
   }

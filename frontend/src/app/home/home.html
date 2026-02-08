@@ -31,11 +31,7 @@
   } @else {
       <div class="flex justify-center">
         <div class="p-4">
-          @if (folderList(); as file) {
-            {{ file.name }} : {{ file.path }}
-          } @else {
-            <p>Chargement ou dossier vide...</p>
-          }
+          <app-file-container [node]="fileSystem()"></app-file-container>
         </div>
       </div>
   }

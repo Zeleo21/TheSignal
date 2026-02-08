@@ -1,0 +1,13 @@
+<div class="node-container" [style.padding-left.px]="depth() * 20">
+  <div class="flex items-center gap-2 p-1 hover:bg-panel cursor-pointer rounded text-xs"
+       (click)="toggle()">
+    <span>{{ isDirectory ? (isOpen() ? '📂' : '📁') : '📄' }}</span>
+    <span [class.font-bold]="isDirectory">{{ node()?.name  | fileFormat : node()?.type === FileEnum.DIRECTORY }}</span>
+  </div>
+
+  @if (isDirectory && isOpen()) {
+    @for (child of node()?.children; track child.name) {
+      <app-file-exlorer [node]="child" [depth]="depth() + 1"></app-file-exlorer>
+    }
+  }
+</div>
