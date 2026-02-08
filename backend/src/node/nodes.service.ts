@@ -42,10 +42,11 @@ export class NodesService {
 
     async upsertFilesIntoNodes(files: FileInformation[]): Promise<Node[]> {
         await this.checkVirtualRootNodeExistOrCreate();
-        let insertedFileNodes = [];
+        let rootDirectory = "";
         for (const file of files) {
             const parsedPath = this.parsePath(file?.path);
             let directories = parsedPath.slice(0, parsedPath.length - 1);
+            console.log(directories[0]);
             const currentFileParentId = await this.checkExistingDirectoriesOrCreate(directories);
             const newNodeForCurrentFile = this.transformFileToNode(file, currentFileParentId);
             const newNode = await prisma.node.upsert({
@@ -58,14 +59,14 @@ export class NodesService {
                 update: {},
                 create: newNodeForCurrentFile,
             });
-            insertedFileNodes.push(newNode);
+            // We add the root directory to return all root directories.
+            rootDirectory = directories[0];
         }
-        return insertedFileNodes;
+        return this.getRootNodeOfUpsertedDirectories(rootDirectory);
     }
 
     //We return the deepest directory parentId for it to be rattached to the currentFile.
     async checkExistingDirectoriesOrCreate(directories: string[]): Promise<string | null> {
-        console.log('directories', directories);
         let pathKey = "";
         let currentParentId: string | null = null;
         for (const dirName of directories) {
@@ -94,4 +95,52 @@ export class NodesService {
         }
         return currentParentId;
     }
+
+    async getRootNodeOfUpsertedDirectories(directory: string): Promise<Node[]> {
+        if(!directory || directory.length === 0) return [];
+        return prisma.node.findMany({
+            where: {
+                name: directory,
+            }
+        })
+    }
+
+    buildTree(nodes: Node[], rootId: string | null): any[] {
+        const childrenMap = new Map<string | null, Node[]>();
+        nodes.forEach(node => {
+            const list = childrenMap.get(node.parentId) || [];
+            list.push(node);
+            childrenMap.set(node.parentId, list);
+        });
+        const helper = (id: string | null): any[] => {
+            return (childrenMap.get(id) || []).map(node => ({
+                ...node,
+                children: helper(node.id)
+            }));
+        };
+        return helper(rootId);
+    }
+
+    async getAllFilesAndDirectoriesFromRootNode(rootNodeId: string): Promise<Node[]> {
+        const tree = await prisma.$queryRaw<Node[]>`
+            WITH RECURSIVE tree AS (
+            SELECT * FROM nodes WHERE id = ${rootNodeId}::uuid
+            UNION ALL
+            SELECT n.* FROM nodes n
+            INNER JOIN tree t ON n.parent_id = t.id
+        )
+        SELECT 
+            id,
+            parent_id as "parentId",
+            name,
+            type,
+            metadata,
+            frequency_vector as "frequencyVector",
+            created_at as "createdAt"
+            FROM tree;
+        `;
+        console.log(tree);
+        return this.buildTree(tree, tree[0].parentId);
+    }
+
 }

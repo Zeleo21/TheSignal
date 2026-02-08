@@ -16,9 +16,9 @@ export class FileService {
     return fileInformation;
   }
 
-  async uploadFiles(files: FileList): Promise<void> {
+  async uploadFiles(files: FileList): Promise<string> {
     if (!files || files.length === 0) {
-      return;
+      return '';
     }
     let fileInformation = this.extractFileInformation(files);
     console.log(fileInformation);
@@ -26,10 +26,20 @@ export class FileService {
       //FIXME : use .env and everything later on for cleeeean code
       //FIXME : also move this into an api service for better reusability
       const res = await axios.post("http://localhost:3300/nodes/upload", fileInformation)
-      console.log('res is : ', res);
+      return res?.data[0]?.id;
+      // const rootFolder = await axios.get(`http://localhost:3300/nodes/tree/${res.data[0]?.id}`, res)
     } catch (error) {
       console.error(error);
+      return '';
     }
+  }
+
+  //FIXME for better display :)
+  async getAllFilesFromRootNode(nodeId: string): Promise<File> {
+    const tree = await axios.get(`http://localhost:3300/nodes/tree/${nodeId}`);
+    console.log(tree.data);
+    console.log(tree.data[0])
+    return tree.data[0];
   }
 }
 
