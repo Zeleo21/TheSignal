@@ -4,9 +4,12 @@ import { FileEnum } from "../constants/fileEnum";
 import prisma from "../prisma/client";
 import { Prisma, Node } from '@prisma/client';
 import ROOT_NODE from "../prisma/constants";
+import {NodeComputeService} from "./node-compute/node-compute.service";
 
 @Injectable()
 export class NodesService {
+
+    constructor(private readonly _nodeComputeService: NodeComputeService) {}
 
     private dirCache = new Map<string, string>();
 
@@ -27,16 +30,18 @@ export class NodesService {
         return path.split("/");
     }
 
-    transformFileToNode(file: FileInformation, parentId: string | null): Prisma.NodeUncheckedCreateInput {
-        return {
+    transformAndComputeFileToNode(file: FileInformation, parentId: string | null): Prisma.NodeUncheckedCreateInput {
+        const newNode = {
             parentId: parentId,
             name: file.name,
             type: FileEnum.FILE,
             createdAt: new Date(Date.now()),
             metadata: {},
-            //FIXME: fix this when we compute the data for it.
-            //FIXME: fix this when we compute the data for it.
-            frequencyVector: [0,0,0],
+        }
+        const frequencyVector = this._nodeComputeService.computeNodeFileFrequencyVector(file, FileEnum.FILE);
+        return {
+            ...newNode,
+            frequencyVector,
         }
     }
 
@@ -48,7 +53,7 @@ export class NodesService {
             let directories = parsedPath.slice(0, parsedPath.length - 1);
             console.log(directories[0]);
             const currentFileParentId = await this.checkExistingDirectoriesOrCreate(directories);
-            const newNodeForCurrentFile = this.transformFileToNode(file, currentFileParentId);
+            const newNodeForCurrentFile = this.transformAndComputeFileToNode(file, currentFileParentId);
             const newNode = await prisma.node.upsert({
                 where: {
                     parentId_name: {

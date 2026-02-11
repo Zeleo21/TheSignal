@@ -9,6 +9,7 @@ export class FileService {
 
   extractFileInformation(files: FileList): File[] {
     let fileInformation: File[] = [];
+    console.log(files);
     const actualFiles = Array.from(files);
     for(const file of actualFiles) {
       fileInformation.push({ name: file.name, size: file.size, type: file.type, path: file.webkitRelativePath })
